@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="7">
+      <Unit0>
+        <Filename Value="main.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="main"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="10"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="pif.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PiF"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="53"/>
+        <CursorPos X="50" Y="1942"/>
+        <FoldState Value=" TCFF71 T3iG0a3 piXjY0G311 pjakX2[K4lPjc4M12121G p0w50_Z0G1111]Esd0}s055]xcoD0K TLrW019"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\win\crt.pp"/>
+        <UnitName Value="crt"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="7"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\inc\heaptrc.pp"/>
+        <UnitName Value="heaptrc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="39" Y="121"/>
+        <UsageCount Value="3"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="C:\lazarus\components\codetools\memcheck.pas"/>
+        <UnitName Value="MemCheck"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="8"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="C:\lazarus\components\leakview\heaptrcview.pas"/>
+        <UnitName Value="HeapTrcView"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="90"/>
+        <CursorPos X="46" Y="17"/>
+        <UsageCount Value="8"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="pif[Konflikt].pas"/>
+        <TopLine Value="1846"/>
+        <CursorPos X="51" Y="1561"/>
+        <FoldState Value=" T3uX2G?"/>
+        <UsageCount Value="7"/>
+      </Unit6>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="29" HistoryIndex="28">
+      <Position1>
+        <Filename Value="pif.pas"/>
+        <Caret Line="821" Column="1" TopLine="794"/>
+      </Position1>
+      <Position2>
+        <Filename Value="pif.pas"/>
+        <Caret Line="830" Column="1" TopLine="813"/>
+      </Position2>
+      <Position3>
+        <Filename Value="pif.pas"/>
+        <Caret Line="831" Column="1" TopLine="813"/>
+      </Position3>
+      <Position4>
+        <Filename Value="pif.pas"/>
+        <Caret Line="833" Column="58" TopLine="813"/>
+      </Position4>
+      <Position5>
+        <Filename Value="pif.pas"/>
+        <Caret Line="835" Column="1" TopLine="813"/>
+      </Position5>
+      <Position6>
+        <Filename Value="pif.pas"/>
+        <Caret Line="836" Column="1" TopLine="813"/>
+      </Position6>
+      <Position7>
+        <Filename Value="pif.pas"/>
+        <Caret Line="839" Column="1" TopLine="813"/>
+      </Position7>
+      <Position8>
+        <Filename Value="pif.pas"/>
+        <Caret Line="841" Column="1" TopLine="813"/>
+      </Position8>
+      <Position9>
+        <Filename Value="pif.pas"/>
+        <Caret Line="842" Column="1" TopLine="814"/>
+      </Position9>
+      <Position10>
+        <Filename Value="pif.pas"/>
+        <Caret Line="105" Column="1" TopLine="43"/>
+      </Position10>
+      <Position11>
+        <Filename Value="pif.pas"/>
+        <Caret Line="112" Column="1" TopLine="47"/>
+      </Position11>
+      <Position12>
+        <Filename Value="pif.pas"/>
+        <Caret Line="119" Column="1" TopLine="102"/>
+      </Position12>
+      <Position13>
+        <Filename Value="pif.pas"/>
+        <Caret Line="127" Column="1" TopLine="102"/>
+      </Position13>
+      <Position14>
+        <Filename Value="pif.pas"/>
+        <Caret Line="128" Column="1" TopLine="102"/>
+      </Position14>
+      <Position15>
+        <Filename Value="pif.pas"/>
+        <Caret Line="130" Column="1" TopLine="102"/>
+      </Position15>
+      <Position16>
+        <Filename Value="pif.pas"/>
+        <Caret Line="132" Column="1" TopLine="104"/>
+      </Position16>
+      <Position17>
+        <Filename Value="pif.pas"/>
+        <Caret Line="133" Column="1" TopLine="105"/>
+      </Position17>
+      <Position18>
+        <Filename Value="pif.pas"/>
+        <Caret Line="134" Column="1" TopLine="106"/>
+      </Position18>
+      <Position19>
+        <Filename Value="pif.pas"/>
+        <Caret Line="137" Column="1" TopLine="109"/>
+      </Position19>
+      <Position20>
+        <Filename Value="pif.pas"/>
+        <Caret Line="139" Column="1" TopLine="111"/>
+      </Position20>
+      <Position21>
+        <Filename Value="pif.pas"/>
+        <Caret Line="140" Column="1" TopLine="112"/>
+      </Position21>
+      <Position22>
+        <Filename Value="pif.pas"/>
+        <Caret Line="848" Column="1" TopLine="832"/>
+      </Position22>
+      <Position23>
+        <Filename Value="pif.pas"/>
+        <Caret Line="1029" Column="1" TopLine="1012"/>
+      </Position23>
+      <Position24>
+        <Filename Value="pif.pas"/>
+        <Caret Line="240" Column="1" TopLine="181"/>
+      </Position24>
+      <Position25>
+        <Filename Value="pif.pas"/>
+        <Caret Line="186" Column="1" TopLine="179"/>
+      </Position25>
+      <Position26>
+        <Filename Value="pif.pas"/>
+        <Caret Line="187" Column="1" TopLine="179"/>
+      </Position26>
+      <Position27>
+        <Filename Value="pif.pas"/>
+        <Caret Line="188" Column="1" TopLine="179"/>
+      </Position27>
+      <Position28>
+        <Filename Value="pif.pas"/>
+        <Caret Line="1175" Column="49" TopLine="1106"/>
+      </Position28>
+      <Position29>
+        <Filename Value="pif.pas"/>
+        <Caret Line="1024" Column="31" TopLine="1011"/>
+      </Position29>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="3">
+      <Item1>
+        <Kind Value="bpkData"/>
+        <WatchData Value="lista"/>
+        <WatchScope Value="wpsGlobal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Expression Value="lista=nil"/>
+        <InitialEnabled Value="False"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="pif.pas"/>
+        <Line Value="1146"/>
+      </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="pif.pas"/>
+        <Line Value="1426"/>
+      </Item3>
+    </BreakPoints>
+    <Watches Count="19">
+      <Item1>
+        <Expression Value="glowa_uzytkownikow"/>
+      </Item1>
+      <Item2>
+        <Expression Value="glowa_uzytkownikow^.nastepny"/>
+      </Item2>
+      <Item3>
+        <Expression Value="tmp_u"/>
+      </Item3>
+      <Item4>
+        <Expression Value="tmp_u^.glowa_ksiazek"/>
+      </Item4>
+      <Item5>
+        <Expression Value="glowa_ksiazki"/>
+      </Item5>
+      <Item6>
+        <Expression Value="tmp1^.tytul"/>
+      </Item6>
+      <Item7>
+        <Expression Value="element^.tytul"/>
+      </Item7>
+      <Item8>
+        <Expression Value="opcja"/>
+      </Item8>
+      <Item9>
+        <Expression Value="element"/>
+      </Item9>
+      <Item10>
+        <Expression Value="tmp"/>
+      </Item10>
+      <Item11>
+        <Expression Value="tmp2^.tytul"/>
+      </Item11>
+      <Item12>
+        <Expression Value="tmp2^.nastepny^.tytul"/>
+      </Item12>
+      <Item13>
+        <Expression Value="tmp2^.poprzedni^.tytul"/>
+      </Item13>
+      <Item14>
+        <Expression Value="tmp3"/>
+      </Item14>
+      <Item15>
+        <Expression Value="tmp^.nastepny"/>
+      </Item15>
+      <Item16>
+        <Expression Value="z"/>
+      </Item16>
+      <Item17>
+        <Expression Value="tmp^.poprzedni"/>
+      </Item17>
+      <Item18>
+        <Expression Value="i"/>
+      </Item18>
+      <Item19>
+        <Expression Value="element_k^.nastepny"/>
+      </Item19>
+    </Watches>
+  </Debugging>
+</CONFIG>

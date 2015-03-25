@@ -1,0 +1,9 @@
+program Biblioteka;
+uses CRT, GRAPH, PiF;
+begin
+  rysuj;
+  g_uzytkownicy:=nil; //zerowanie wskaznikow na glowy list
+  g_ksiazki:=nil;
+  wczytaj_z_pliku(g_uzytkownicy,g_ksiazki); //wczytanie danych programu
+  menu(g_ksiazki,g_uzytkownicy);
+end.

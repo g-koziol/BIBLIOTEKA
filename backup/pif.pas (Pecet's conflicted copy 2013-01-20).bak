@@ -1,0 +1,1222 @@
+unit PiF;
+
+interface
+
+uses
+  Classes, SysUtils, CRT, Graph, DOS;
+type
+  wsk_uzytkownik = ^uzytkownik;
+  wsk_ksiazka = ^ksiazka;
+  uzytkownik = record
+    imie : string;
+    nazwisko : string;
+    pesel : string;
+    ilosc_wypozyczonych_ksiazek : byte;
+    next : wsk_uzytkownik;
+    previous : wsk_uzytkownik;
+    glowa_ksiazek : wsk_ksiazka;
+    end;
+  ksiazka = record
+    autor : string;
+    tytul : string;
+    wydawnictwo : string;
+    rok_wydania : string;
+    dostepnosc : byte;
+    next : wsk_ksiazka;
+    previous : wsk_ksiazka;
+    end;
+
+  tab_ksiazka = array of wsk_ksiazka;
+  tab_uzytkownik = array of wsk_uzytkownik;
+
+var
+  uzytkownicy, puzytkownik, ksiazki : text;
+  g_uzytkownicy : wsk_uzytkownik;
+  g_ksiazki : wsk_ksiazka;
+  x,y, opcja, licznik : integer;
+  znak: char;
+  zmienna: dword;
+  //adres_uzytkownikow : string;
+  //adres_ksiazek : string;
+
+//procedure ustawienia;
+procedure menu (var g_ksiazki: wsk_ksiazka; var g_uzytkownicy : wsk_uzytkownik);
+procedure wczytaj_z_pliku(var uzytkownicy : text; var ksiazki : text; var g_uzytkownicy : wsk_uzytkownik; var g_ksiazki : wsk_ksiazka);
+function wyswietl_ksiazki(var glowa : wsk_ksiazka): wsk_ksiazka;
+function wyswietl_uzytkownikow( var glowa : wsk_uzytkownik {var glowak : wsk_ksiazka}): wsk_uzytkownik;
+//procedure dodaj_ksiazki_uzytkownikowi (var glowa : wsk_ksiazka);
+procedure sortuj_uzytkownikow (var glowa : wsk_uzytkownik);
+procedure sortuj_ksiazki (var glowa : wsk_ksiazka);
+
+implementation
+function wyswietl_ksiazki(var glowa : wsk_ksiazka): wsk_ksiazka;
+
+      procedure licz_ile(glowa: wsk_ksiazka; var i: integer);
+      begin
+       i:=0;
+       while(glowa<>nil) do
+          begin
+            glowa:=glowa^.next;
+            inc(i);
+          end;
+      end;
+
+      procedure edytuj (var element : wsk_ksiazka);
+
+          procedure edycja (var element : wsk_ksiazka);
+           procedure tytul(var element : wsk_ksiazka);
+           var
+             tytul : string;
+           begin
+            clrscr;
+            gotoxy(2,2);
+            write('Podaj nowe tytul:');
+            gotoxy(2,3);
+            readln(tytul);
+            element^.tytul:=tytul;
+           end;
+
+           procedure autor(var element : wsk_ksiazka);
+           var
+             autor : string;
+           begin
+            clrscr;
+            gotoxy(2,2);
+            write('Podaj nowego autora:');
+            gotoxy(2,3);
+            readln(autor);
+            element^.autor:=autor;
+           end;
+
+           procedure wydawnictwo(var element : wsk_ksiazka);
+           var
+             wydawnictwo : string;
+           begin
+            clrscr;
+            gotoxy(2,2);
+            write('Podaj nowe wydawnictwo:');
+            gotoxy(2,3);
+            readln(wydawnictwo);
+            element^.wydawnictwo:=wydawnictwo;
+           end;
+
+           procedure rok_wydania(var element : wsk_ksiazka);
+           var
+             rok_wydania : string;
+           begin
+            clrscr;
+            gotoxy(2,2);
+            write('Podaj nowe wydawnictwo:');
+            gotoxy(2,3);
+            readln(rok_wydania);
+            element^.rok_wydania:=rok_wydania;
+           end;
+
+           procedure wypisz_element_na_ekran(element : wsk_ksiazka);
+           begin
+              clrscr;
+              gotoxy(2,2);
+              write('"',element^.tytul,'"');
+              gotoxy(2,3);
+              write(element^.autor);
+              gotoxy(2,4);
+              write(element^.wydawnictwo);
+              gotoxy(2,5);
+              write('Rok wydania: ', element^.rok_wydania);
+              gotoxy(2,6);
+              write('Dostepnosc: ');
+              if element^.dostepnosc=1 then write('dostepna')
+              else write('brak');
+           end;
+
+          var
+          z: char;
+          begin
+          repeat
+          wypisz_element_na_ekran(element);
+          gotoxy(windmaxx div 2,windmaxy-7);
+          write('Co chcesz edytowac?');
+          gotoxy(windmaxx div 2,windmaxy-6);
+          write('T - Tytul');
+          gotoxy(windmaxx div 2,windmaxy-5);
+          write('A - Autor');
+          gotoxy(windmaxx div 2,windmaxy-4);
+          write('R - rok wydania');
+          gotoxy(windmaxx div 2,windmaxy-3);
+          write('W -wydawnictwo');
+          gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+          write('Backspace - powrot');
+          repeat
+            z:=readkey;
+          until ((z='a') or (z='A') or (z='T') or (z='t') or (z='w') or (z='W') or (z='r') or (z='R') or (z=#8));
+          if z<>#8 then
+            if (z='t') or (z='T') then tytul(element);
+            if (z='a') or (z='A') then autor(element);
+            if (z='w') or (z='W') then wydawnictwo(element);
+            if (z='r') or (z='R') then rok_wydania(element);
+          until (z=#8) ;
+          end;
+
+          procedure wypisz_element_na_ekran(element : wsk_ksiazka);
+         begin
+            clrscr;
+                gotoxy(2,2);
+                write('"',element^.tytul,'"');
+                gotoxy(2,3);
+                write(element^.autor);
+                gotoxy(2,4);
+                write(element^.wydawnictwo);
+                gotoxy(2,5);
+                write('Rok wydania: ', element^.rok_wydania);
+                gotoxy(2,6);
+                write('Dostepnosc: ');
+                if element^.dostepnosc=1 then write('dostepna')
+                else write('brak');
+                gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+                write('Backspace - powrot');
+         end;
+
+          procedure usun(var element : wsk_ksiazka);
+         var
+           tmp : wsk_ksiazka;
+         begin
+           if (element^.next<>nil) then
+             if (element^.previous<>nil) then
+               begin
+                new(tmp);
+                tmp:=element;
+                element^.previous^.next:=element^.next;
+                element^.next^.previous:=element^.previous;
+                dispose(tmp);
+               end
+             else
+               begin
+                new(tmp);
+                tmp:=element;
+                element:=element^.next;
+                element^.previous:=nil;
+                dispose(tmp);
+               end
+           else
+             if (element^.previous=nil) then element:=nil
+             else
+               begin
+                 new(tmp);
+                 tmp:=element;
+                 element^.previous^.next:=nil;
+                 dispose(tmp);
+               end;
+         end;
+
+      var
+       tmp : wsk_ksiazka;
+       z : char;
+       begin
+        new(tmp);
+        tmp:=element;
+        repeat
+          repeat
+            wypisz_element_na_ekran(tmp);
+            gotoxy(windmaxx div 2,2);
+            write('E - Edycja');
+            gotoxy(windmaxx div 2,3);
+            write('U - Usun');
+            gotoxy(windmaxx div 2,4);
+            write('W - Wyswietl wypozyczone ksiazki');
+            z:=readkey;
+          until ((z='e') or (z='E') or (z='U') or (z='u') or (z='w') or (z='W') or (z=#8));
+          if z<>#8 then
+            if (z='E') or (z='e') then edycja(tmp);
+            if (z='u') or (z='U') then usun(tmp);
+            //if (z='w') or (z='W') then wyswietl_wypozyczone_ksiazki(tmp);
+        until (z=#8);
+       end;
+
+      procedure wyswietl_liste(glowa : wsk_ksiazka;i : integer; var p : boolean);
+       var
+         dlugosc : integer;
+       begin
+         clrscr;
+         dlugosc:=i;
+          i:=0;
+          p:=false;
+          if glowa=nil then
+            begin
+              gotoxy(2,2);
+              write('Nie ma danych! (Nacisnij ENTER)');
+              readln;
+              p:=true;
+            end
+          else
+            begin
+              while ((i<dlugosc) and (2+i<windmaxy-1) and (wherey<>windmax-1)) do
+                begin
+                  gotoxy(2,2+i);
+                  write('"',glowa^.tytul,'", ', glowa^.autor);
+                  glowa:=glowa^.next;
+                  inc(i);
+                end;
+            end;
+       end;
+    var
+      g_orginal, aktualnie_wybrane,tmp : wsk_ksiazka;
+      znak : char;
+      i,z : integer;
+      p: boolean;
+    begin
+      licz_ile(glowa,i);
+      wyswietl_liste(glowa,i,p);
+      gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+      write('Backspace - powrot');
+      if p=false then
+        begin
+        gotoxy(1,2);
+        write('>');
+        aktualnie_wybrane:=glowa;
+        gotoxy(1,2);
+        tmp:=nil;
+        new(tmp);
+        while (znak<>#8) do
+          begin
+            znak:=readkey;
+            case znak of
+              #72 : begin
+                if (aktualnie_wybrane^.previous<>nil) then
+                  begin
+                    if (wherey=2) then
+                      begin
+                        aktualnie_wybrane:=aktualnie_wybrane^.previous;
+                        tmp:=aktualnie_wybrane;
+                        z:=2;
+                        clrscr;
+                        while (z<windmaxy-2) do
+                          begin
+                            gotoxy(2,z+1);
+                            write(aktualnie_wybrane^.next^.tytul,', ', aktualnie_wybrane^.next^.autor);
+                            aktualnie_wybrane:=aktualnie_wybrane^.next;
+                            inc(z);
+                          end;
+                        gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+                        write('Backspace - powrot');
+                        aktualnie_wybrane:=tmp;
+                        gotoxy(2,2);
+                        write(aktualnie_wybrane^.tytul,', ', aktualnie_wybrane^.autor);
+                        gotoxy(1,2);
+                        write(' ');
+                        gotoxy(1,2);
+                        write('>');
+                        gotoxy(1,2);
+                      end
+                    else
+                      begin
+                        write(' ');
+                        gotoxy(wherex-1,wherey-1);
+                        write('>');
+                        gotoxy(wherex-1,wherey);
+                        aktualnie_wybrane:=aktualnie_wybrane^.previous;
+                      end;
+                 end;
+              end;
+              #80 : begin
+                if (aktualnie_wybrane^.next<>nil) then
+                  begin
+                    if (wherey=windmaxy-2) then
+                      begin
+                        aktualnie_wybrane:=aktualnie_wybrane^.next;
+                        tmp:=aktualnie_wybrane;
+                        z:=wherey;
+                        clrscr;
+                        while (z>2) do
+                          begin
+                            gotoxy(2,z-1);
+                            write(aktualnie_wybrane^.previous^.tytul,', ', aktualnie_wybrane^.previous^.autor);
+                            aktualnie_wybrane:=aktualnie_wybrane^.previous;
+                            dec(z);
+                          end;
+                        gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+                        write('Backspace - powrot');
+                        aktualnie_wybrane:=tmp;
+                        gotoxy(2,windmaxy-2);
+                        write(aktualnie_wybrane^.tytul,', ', aktualnie_wybrane^.autor);
+                        gotoxy(1,windmaxy-2);
+                        write(' ');
+                        gotoxy(1,windmaxy-2);
+                        write('>');
+                        gotoxy(1,windmaxy-2);
+                      end
+                    else
+                      begin
+                        write(' ');
+                        gotoxy(wherex-1,wherey+1);
+                        write('>');
+                        gotoxy(wherex-1,wherey);
+                        aktualnie_wybrane:=aktualnie_wybrane^.next;
+                      end;
+                  end;
+              end;
+              #13 : begin
+                edytuj(aktualnie_wybrane);
+                sortuj_ksiazki(glowa);
+                wyswietl_ksiazki(glowa);
+                znak:=#8
+              end;
+              #27 : halt;
+              //#8: break;
+            end;
+          end;
+        end;
+        wyswietl_ksiazki:=glowa;
+        sortuj_ksiazki(glowa);
+    end;
+
+function wyswietl_uzytkownikow( var glowa : wsk_uzytkownik {var glowak : wsk_ksiazka}): wsk_uzytkownik;
+
+      procedure licz_ile(glowa: wsk_uzytkownik; var i: integer);
+        begin
+         i:=0;
+         while(glowa<>nil) do
+            begin
+              glowa:=glowa^.next;
+              inc(i);
+            end;
+        end;
+
+      procedure edytuj (var element : wsk_uzytkownik);
+
+           function edycja (element : wsk_uzytkownik) : wsk_uzytkownik;
+               procedure imie(var element : wsk_uzytkownik);
+               var
+                 imie : string;
+               begin
+                clrscr;
+                gotoxy(2,2);
+                write('Podaj nowe imie:');
+                gotoxy(2,3);
+                readln(imie);
+                element^.imie:=imie;
+               end;
+
+               procedure nazwisko(var element : wsk_uzytkownik);
+               var
+                 nazwisko : string;
+               begin
+                clrscr;
+                gotoxy(2,2);
+                write('Podaj nowe nazwisko:');
+                gotoxy(2,3);
+                readln(nazwisko);
+                element^.nazwisko:=nazwisko;
+               end;
+
+               procedure pesel(var element : wsk_uzytkownik);
+               var
+                 pesel : string;
+               begin
+                clrscr;
+                gotoxy(2,2);
+                write('Podaj nowy pesel:');
+                gotoxy(2,3);
+                readln(pesel);
+                element^.pesel:=pesel;
+               end;
+
+               procedure wypisz_element_na_ekran(element : wsk_uzytkownik);
+               begin
+                  clrscr;
+                  gotoxy(2,2);
+                  write(element^.nazwisko);
+                  gotoxy(2,3);
+                  write(element^.imie);
+                  gotoxy(2,4);
+                  write(element^.pesel);
+               end;
+
+           var
+             z: char;
+           begin
+            repeat
+              wypisz_element_na_ekran(element);
+              gotoxy(windmaxx div 2,2);
+              write('Co chcesz edytowac?');
+              gotoxy(windmaxx div 2,3);
+              write('I - imie');
+              gotoxy(windmaxx div 2,4);
+              write('N - nazwisko');
+              gotoxy(windmaxx div 2,5);
+              write('P - pesel');
+              gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+              write('Backspace - powrot');
+              repeat
+                z:=readkey;
+              until ((z='i') or (z='I') or (z='n') or (z='N') or (z='p') or (z='P') or (z=#8));
+              if z<>#8 then
+                if (z='i') or (z='I') then imie(element);
+                if (z='n') or (z='N') then nazwisko(element);
+                if (z='p') or (z='P') then pesel(element);
+            until (z=#8) ;
+           end;
+
+           procedure wypisz_element_na_ekran (element : wsk_uzytkownik);
+           begin
+              clrscr;
+              gotoxy(2,2);
+              write(element^.nazwisko);
+              gotoxy(2,3);
+              write(element^.imie);
+              gotoxy(2,4);
+              write(element^.pesel);
+           end;
+
+           procedure usun (var element : wsk_uzytkownik);
+           var
+             tmp : wsk_uzytkownik;
+           begin
+             if (element^.next<>nil) then
+               if (element^.previous<>nil) then
+                 begin
+                   new(tmp);
+                   tmp:=element^.previous;
+                   element^.previous^.next:=element^.next;
+                  element^.next^.previous:=element^.previous;
+                  element:=tmp;
+                  //dispose(element);
+                 end
+               else
+                 begin
+                   //new(tmp);
+                   //tmp:=element;
+                  element:=element^.next;
+                  element^.previous:=nil;
+                  //dispose(tmp);
+                 end
+             else //jesli nastepny jest nilem
+               if (element^.previous=nil) then element:=nil //jesli poprzedni nilem
+               else// jesli cos jest przed
+                 begin
+                   element:=element^.previous;
+                   element^.next:=nil;
+                   //dispose(element);
+                 end;
+           end;
+
+           procedure wyswietl_wypozyczone_ksiazki (var element: wsk_uzytkownik);
+           begin
+            if (element^.glowa_ksiazek=nil) then
+              begin
+                gotoxy(2,2);
+                writeln('Brak wypozyczonych ksiazek.');
+                readln;
+              end
+            else wyswietl_ksiazki(element^.glowa_ksiazek);
+           end;
+
+       var
+         tmp : wsk_uzytkownik;
+         z : char;
+       begin
+        new(tmp);
+        tmp:=element;
+        repeat
+          repeat
+            wypisz_element_na_ekran(element);
+            gotoxy(windmaxx div 2,2);
+            write('E - Edycja');
+            gotoxy(windmaxx div 2,3);
+            write('U - Usun');
+            gotoxy(windmaxx div 2,4);
+            write('W - Wyswietl wypozyczone ksiazki');
+            gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+            write('Backspace - powrot');
+            z:=readkey;
+          until ((z='e') or (z='E') or (z='U') or (z='u') or (z='w') or (z='W') or (z=#8));
+          if z<>#8 then
+            if (z='E') or (z='e') then edycja(element);
+            if (z='w') or (z='W') then wyswietl_wypozyczone_ksiazki(element);
+            if (z='u') or (z='U') then
+              begin
+               usun(element);
+               break;
+              end;
+        until (z=#8);
+       end;
+
+      procedure wyswietl_liste(glowa : wsk_uzytkownik;i : integer; var p : boolean);
+       var
+         dlugosc : integer;
+       begin
+         clrscr;
+         dlugosc:=i;
+          i:=0;
+          p:=false;
+          if glowa=nil then
+            begin
+              gotoxy(2,2);
+              write('Nie ma danych! (Nacisnij ENTER)');
+              readln;
+              p:=true;
+            end
+          else
+            begin
+              while ((i<dlugosc) and (2+i<windmaxy-1) and (wherey<>windmax-1) and (glowa<>nil)) do
+                begin
+                  gotoxy(2,2+i);
+                  write(glowa^.nazwisko,' ', glowa^.imie);
+                  glowa:=glowa^.next;
+                  inc(i);
+                end;
+            end;
+       end;
+
+      var
+      g_orginal, aktualnie_wybrane,tmp : wsk_uzytkownik;
+      znak : char;
+      i,z : integer;
+      p: boolean;
+    begin
+      licz_ile(glowa,i);
+      wyswietl_liste(glowa,i,p);
+      gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+      write('Backspace - powrot');
+      if p=false then
+        begin
+        gotoxy(1,2);
+        write('>');
+        aktualnie_wybrane:=glowa;
+        gotoxy(1,2);
+        tmp:=nil;
+        new(tmp);
+        while (znak<>#8) do
+          begin
+            znak:=readkey;
+            case znak of
+              #72 : begin
+                if (aktualnie_wybrane^.previous<>nil) then
+                  begin
+                    if (wherey=2) then
+                      begin
+                        aktualnie_wybrane:=aktualnie_wybrane^.previous;
+                        tmp:=aktualnie_wybrane;
+                        z:=2;
+                        clrscr;
+                        while (z<windmaxy-2) do
+                          begin
+                            gotoxy(2,z+1);
+                            write(aktualnie_wybrane^.next^.nazwisko,' ', aktualnie_wybrane^.next^.imie);
+                            aktualnie_wybrane:=aktualnie_wybrane^.next;
+                            inc(z);
+                          end;
+                        gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+                        write('Backspace - powrot');
+                        aktualnie_wybrane:=tmp;
+                        gotoxy(2,2);
+                        write(aktualnie_wybrane^.nazwisko,' ', aktualnie_wybrane^.imie);
+                        gotoxy(1,2);
+                        write(' ');
+                        gotoxy(1,2);
+                        write('>');
+                        gotoxy(1,2);
+                      end
+                    else
+                      begin
+                        write(' ');
+                        gotoxy(wherex-1,wherey-1);
+                        write('>');
+                        gotoxy(wherex-1,wherey);
+                        aktualnie_wybrane:=aktualnie_wybrane^.previous;
+                      end;
+                 end;
+              end;
+              #80 : begin
+                if (aktualnie_wybrane^.next<>nil) then
+                  begin
+                    if (wherey=windmaxy-2) then
+                      begin
+                        aktualnie_wybrane:=aktualnie_wybrane^.next;
+                        tmp:=aktualnie_wybrane;
+                        z:=wherey;
+                        clrscr;
+                        while (z>2) do
+                          begin
+                            gotoxy(2,z-1);
+                            write(aktualnie_wybrane^.previous^.nazwisko,' ', aktualnie_wybrane^.previous^.imie);
+                            aktualnie_wybrane:=aktualnie_wybrane^.previous;
+                            dec(z);
+                          end;
+                        gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+                        write('Backspace - powrot');
+                        aktualnie_wybrane:=tmp;
+                        gotoxy(2,windmaxy-2);
+                        write(aktualnie_wybrane^.nazwisko,' ', aktualnie_wybrane^.imie);
+                        gotoxy(1,windmaxy-2);
+                        write(' ');
+                        gotoxy(1,windmaxy-2);
+                        write('>');
+                        gotoxy(1,windmaxy-2);
+                      end
+                    else
+                      begin
+                        write(' ');
+                        gotoxy(wherex-1,wherey+1);
+                        write('>');
+                        gotoxy(wherex-1,wherey);
+                        aktualnie_wybrane:=aktualnie_wybrane^.next;
+                      end;
+                  end;
+              end;
+              #13 : begin
+                edytuj(aktualnie_wybrane);
+                sortuj_uzytkownikow(glowa);
+                wyswietl_uzytkownikow(glowa);
+                znak:=#8
+              end;
+              #27 : halt;
+              //#8  : break;
+            end;
+          end;
+        end;
+        wyswietl_uzytkownikow:=glowa;
+        sortuj_uzytkownikow(glowa);
+
+    end;
+
+procedure sortuj_uzytkownikow (var glowa : wsk_uzytkownik);
+  var
+    tmp : wsk_uzytkownik;
+    zamiana : boolean;
+    //i: integer;
+   begin
+       if (glowa<>nil) and (glowa^.next<>NIL) then sortuj_uzytkownikow(glowa^.next);
+       while (glowa^.next<>nil) and (glowa^.next^.nazwisko<glowa^.nazwisko) do
+           begin
+               new(tmp);
+               tmp:=glowa^.next;
+               glowa^.next:=tmp^.next;
+               tmp^.next:=glowa;
+               tmp^.previous:=glowa^.previous;
+               glowa:=tmp;
+               sortuj_uzytkownikow(glowa);
+           end;
+     end;
+
+procedure sortuj_ksiazki (var glowa : wsk_ksiazka);
+  var
+    tmp : wsk_ksiazka;
+    zamiana : boolean;
+    //i: integer;
+   begin
+       if (glowa<>nil) and (glowa^.next<>NIL) then sortuj_ksiazki(glowa^.next);
+       while (glowa^.next<>nil) and (glowa^.next^.tytul<glowa^.tytul) do
+           begin
+               new(tmp);
+               tmp:=glowa^.next;
+               glowa^.next:=tmp^.next;
+               tmp^.next:=glowa;
+               tmp^.previous:=glowa^.previous;
+               glowa:=tmp;
+               sortuj_ksiazki(glowa);
+           end;
+     end;
+
+procedure menu (var g_ksiazki: wsk_ksiazka; var g_uzytkownicy : wsk_uzytkownik);
+
+  procedure zapisz_do_plikow(glowa_uzytkownicy : wsk_uzytkownik; glowa_ksiazki : wsk_ksiazka);
+  var
+    adres : string;
+    zmienna : integer;
+    puzytkownik, pksiazka : text;
+  begin
+    assign(uzytkownicy,'lista_uzytkownicy.txt');
+    assign(ksiazki,'lista_ksiazki.txt');
+    rewrite(ksiazki);
+    rewrite(uzytkownicy);
+    if (glowa_uzytkownicy=nil) then
+      begin
+        gotoxy(2,2);
+        writeln('Brak danych uzytkownikow');
+      end
+    else
+      begin
+         while (glowa_uzytkownicy<>nil) do
+           begin
+             writeln(uzytkownicy,glowa_uzytkownicy^.nazwisko);
+             writeln(uzytkownicy,glowa_uzytkownicy^.imie);
+             chdir('uzytkownicy');
+             adres:=concat(glowa_uzytkownicy^.nazwisko,'_',glowa_uzytkownicy^.imie,'.txt');
+             assign(puzytkownik,adres);
+             rewrite(puzytkownik);
+             writeln(puzytkownik,glowa_uzytkownicy^.nazwisko);
+             writeln(puzytkownik,glowa_uzytkownicy^.imie);
+             writeln(puzytkownik,glowa_uzytkownicy^.pesel);
+             writeln(puzytkownik,glowa_uzytkownicy^.ilosc_wypozyczonych_ksiazek);
+             while (glowa_uzytkownicy^.glowa_ksiazek<>nil) do
+               begin
+                  writeln(puzytkownik,glowa_uzytkownicy^.glowa_ksiazek^.autor);
+                  writeln(puzytkownik,glowa_uzytkownicy^.glowa_ksiazek^.tytul);
+                  writeln(puzytkownik,glowa_uzytkownicy^.glowa_ksiazek^.wydawnictwo);
+                  writeln(puzytkownik,glowa_uzytkownicy^.glowa_ksiazek^.rok_wydania);
+                  writeln(puzytkownik,glowa_uzytkownicy^.glowa_ksiazek^.dostepnosc);
+                  glowa_uzytkownicy^.glowa_ksiazek:=glowa_uzytkownicy^.glowa_ksiazek^.next;
+               end;
+             close(puzytkownik);
+             chdir('..');
+             glowa_uzytkownicy:=glowa_uzytkownicy^.next;
+           end;
+      end;
+    if (glowa_ksiazki=nil) then
+      begin
+        gotoxy(2,3);
+        writeln('Brak danych ksiazek');
+      end
+    else
+      begin
+       while (glowa_ksiazki<>nil) do
+         begin
+          writeln(ksiazki,glowa_ksiazki^.tytul);
+          chdir('ksiazki');
+          adres:=concat(glowa_ksiazki^.tytul,'.txt');
+          assign(pksiazka,adres);
+          rewrite(pksiazka);
+          writeln(pksiazka,glowa_ksiazki^.tytul);
+          writeln(pksiazka,glowa_ksiazki^.autor);
+           writeln(pksiazka,glowa_ksiazki^.wydawnictwo);
+           writeln(pksiazka,glowa_ksiazki^.rok_wydania);
+           writeln(pksiazka,glowa_ksiazki^.dostepnosc);
+           close(pksiazka);
+           chdir('..');
+           glowa_ksiazki:=glowa_ksiazki^.next;
+         end;
+       gotoxy(2,3);
+
+      end;
+    close(uzytkownicy);
+    close(ksiazki);
+    gotoxy(2,4);
+    //writeln('Nacisnij enter');
+    //readln;
+  end;
+
+  procedure wyswietl(var g_ksizaki : wsk_ksiazka; var g_uzytkownicy : wsk_uzytkownik);
+
+    procedure pisz(var opcja : byte);
+      begin
+        clrscr;
+        gotoxy(2,2);
+        write('1. Wyswietlanie uzytkownikow');
+        gotoxy(2,3);
+        write('2. Wyswietlanie ksiazek');
+        gotoxy(1,2);
+        write('>');
+        gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+        write('Backspace - powrot');
+        gotoxy(1,2);
+        znak:=#0;
+        opcja:=1;
+      end;
+
+  var
+    znak : char;
+    opcja: byte;
+  begin
+  pisz(opcja);
+  while (znak<>#8) do
+    begin
+      znak:=readkey;
+      case znak of
+        #72 : begin
+          if (wherey<>2) then
+            begin
+              write(' ');
+              gotoxy(wherex-1,wherey-1);
+              write('>');
+              gotoxy(wherex-1,wherey);
+              dec(opcja);
+            end;
+        end;
+        #80 : begin
+          if (wherey<>3) then
+            begin
+              write(' ');
+              gotoxy(wherex-1,wherey+1);
+              write('>');
+              gotoxy(wherex-1,wherey);
+              inc(opcja);
+            end;
+        end;
+        #13 : begin
+          case opcja of
+            1 : begin
+                   g_uzytkownicy:=wyswietl_uzytkownikow(g_uzytkownicy);
+                   zapisz_do_plikow(g_uzytkownicy, g_ksiazki);
+            end;
+            2 : begin
+                   g_ksiazki:=wyswietl_ksiazki(g_ksiazki);
+                   zapisz_do_plikow(g_uzytkownicy, g_ksiazki);
+            end;
+          end;
+          pisz(opcja);
+        end;
+        #27 : halt;
+      end;
+    end;
+  zapisz_do_plikow(g_uzytkownicy, g_ksiazki);
+  end;
+
+  procedure dodaj (var g_ksiazki: wsk_ksiazka; var g_uzytkownicy : wsk_uzytkownik);
+
+    procedure dodaj_uzytkownika (var head : wsk_uzytkownik);
+    var
+      tmp : wsk_uzytkownik;
+      imie, nazwisko, pesel : string;
+      ilosc_wypozyczonych_ksiazek : byte;
+    begin
+      clrscr;
+      gotoxy(2,2);
+      write('Podaj nazwisko: ');
+      readln(nazwisko);
+      gotoxy(2,3);
+      write('Podaj imie: ');
+      readln(imie);
+      gotoxy(2,4);
+      write('Podaj pesel: ');
+      readln(pesel);
+
+      if (head = NIL) then
+        begin
+          new(tmp);
+          tmp^.nazwisko:=nazwisko;
+          tmp^.imie:=imie;
+          tmp^.pesel:=pesel;
+          tmp^.next:=nil;
+          tmp^.glowa_ksiazek:=nil;
+          tmp^.ilosc_wypozyczonych_ksiazek := 0;
+          head:=tmp;
+          head^.previous:=nil;
+        end
+      else
+      begin
+          //while (((head^.nazwisko>=nazwisko) and (head^.imie>imie)) and (head^.next<>nil)) do head:=head^.next;
+          begin
+          new(tmp);
+          tmp^.nazwisko:=nazwisko;
+          tmp^.imie:=imie;
+          tmp^.pesel:=pesel;
+          tmp^.previous:=head;
+          tmp^.next:=head^.next;
+          tmp^.ilosc_wypozyczonych_ksiazek := 0;
+          tmp^.glowa_ksiazek:=nil;
+          head^.next:=tmp;
+          end;
+          while (head^.previous<>nil) do head:=head^.previous;
+      end;
+
+      end;
+
+    procedure dodaj_ksiazke (var head : wsk_ksiazka);
+    var
+      tmp : wsk_ksiazka;
+      tytul : string;
+      autor : string;
+      wydawnictwo : string;
+      rok_wydania: string;
+      //stan : byte;
+    begin
+      clrscr;
+      gotoxy(2,2);
+      write('Podaj tytul: ');
+      readln(tytul);
+      gotoxy(2,3);
+      write('Podaj autora: ');
+      readln(autor);
+      gotoxy(2,4);
+      write('Podaj wydawnictwo: ');
+      readln(wydawnictwo);
+      gotoxy(2,5);
+      write('Rok wydania: ');
+      readln(rok_wydania);
+
+      if (head = NIL) then
+        begin
+          new(head);
+          head^.tytul:=tytul;
+          head^.autor:=autor;
+          head^.wydawnictwo:=wydawnictwo;
+          head^.rok_wydania:=rok_wydania;
+          head^.dostepnosc:=1;
+          head^.next:=nil;
+          head^.previous:=nil;
+        end
+      else
+      begin
+       // while not ((head^.tytul>tytul) and (head^.next<>nil)) do head:=head^.next;
+        begin
+          new(tmp);
+          tmp^.tytul:=tytul;
+          tmp^.autor:=autor;
+          tmp^.wydawnictwo:=wydawnictwo;
+          tmp^.rok_wydania:=rok_wydania;
+          tmp^.dostepnosc:=1;
+          tmp^.previous:=head;
+          tmp^.next:=head^.next;
+          head^.next:=tmp
+        end;
+        while (head^.previous<>nil) do head:=head^.previous;
+      end;
+    end;
+
+  procedure pisz;
+  begin
+    clrscr;
+    gotoxy(2,2);
+    write('1. Dodaj uzytkownika');
+    gotoxy(2,3);
+    write('2. Dodaj książke');
+    gotoxy(1,2);
+    write('>');
+    gotoxy(windmaxx-length('Backspace - powrot'),windmaxy-2);
+    write('Backspace - powrot');
+    gotoxy(1,2);
+    opcja:=1;
+  end;
+
+  begin
+  pisz;
+  while (znak<>#8) do
+    begin
+      znak:=#0;
+      znak:=readkey;
+      case znak of
+        #72 : begin
+          if (wherey<>2) then
+            begin
+              write(' ');
+              gotoxy(wherex-1,wherey-1);
+              write('>');
+              gotoxy(wherex-1,wherey);
+              dec(opcja);
+            end;
+        end;
+        #80 : begin
+          if (wherey<>3) then
+            begin
+              write(' ');
+              gotoxy(wherex-1,wherey+1);
+              write('>');
+              gotoxy(wherex-1,wherey);
+              inc(opcja);
+            end;
+        end;
+        #13 : begin
+          case opcja of
+            1 : begin
+             dodaj_uzytkownika(g_uzytkownicy);
+             sortuj_uzytkownikow (g_uzytkownicy);
+            end;
+            2 : begin
+             dodaj_ksiazke(g_ksiazki);
+             sortuj_ksiazki (g_ksiazki);
+            end;
+          end;
+          pisz;
+        end;
+        #27 : halt;
+      end;
+    end;
+  zapisz_do_plikow(g_uzytkownicy,g_ksiazki);
+  end;
+
+  procedure pisz;
+  begin
+    clrscr;
+    gotoxy((windmaxx div 2)-length('Menu'),1);
+    Write('Menu');
+    gotoxy(2,2);
+    write('1. Pokaz uzytkownikow/ksiazki');
+    gotoxy(2,3);
+    write('2. Szukaj uzytkownika/ksiazki');
+    gotoxy(2,4);
+    write('3. Dodaj uzytkownika/ksiazke');
+    gotoxy(1,2);
+    write('>');
+    gotoxy(1,2);
+    opcja:=1;
+    znak:=#0;
+  end;
+
+begin
+  while(znak<>#27) do
+    begin
+  textbackground(5);
+  {while (znak<>#27) do
+    begin
+      znak:=readkey;
+      write(ord(znak));
+    end;}
+  pisz;
+  while (znak <> #13) do
+    begin
+      znak:=#0;
+      znak:=readkey;
+      case znak of
+        #72 : begin
+          if (wherey<>2) then
+            begin
+              write(' ');
+              gotoxy(wherex-1,wherey-1);
+              write('>');
+              gotoxy(wherex-1,wherey);
+              dec(opcja);
+            end;
+        end;
+        #80 : begin
+          if (wherey<>6) then
+            begin
+              write(' ');
+              gotoxy(wherex-1,wherey+1);
+              write('>');
+              gotoxy(wherex-1,wherey);
+              inc(opcja);
+            end;
+        end;
+        #13 : begin
+          case opcja of
+            1 : wyswietl(g_ksiazki,g_uzytkownicy);
+            //2 : szukaj;
+            3 : dodaj(g_ksiazki,g_uzytkownicy);
+          end;
+          pisz;
+        end;
+        #27 : break;
+      end;
+    end;
+    end;
+  clrscr;
+  gotoxy(windmaxx div 2, windmaxy div 2);
+  writeln('Zwalnianie zasobow');
+  delay(1000);
+  halt;
+end;
+
+procedure wczytaj_z_pliku(var uzytkownicy : text; var ksiazki : text; var g_uzytkownicy : wsk_uzytkownik; var g_ksiazki : wsk_ksiazka);
+
+    function wczytaj_uzytkownikow(var uzytkownicy :text): wsk_uzytkownik;
+    var
+      glowa,tmp: wsk_uzytkownik;
+      puzytkownik : text;
+      adres: string;
+    begin
+      if (eof(uzytkownicy)) then wczytaj_uzytkownikow:=nil
+      else
+        begin
+          new(glowa);
+          glowa^.previous:=nil;
+          while (eof(uzytkownicy)<>true) do
+            begin
+              readln(uzytkownicy,glowa^.nazwisko);
+              readln(uzytkownicy,glowa^.imie);
+              chdir('uzytkownicy');
+              adres:=concat(glowa^.nazwisko,'_',glowa^.imie,'.txt');
+              assign(puzytkownik,adres);
+              reset(puzytkownik);
+              readln(puzytkownik);
+              readln(puzytkownik);
+              readln(puzytkownik,glowa^.pesel);
+              readln(puzytkownik,glowa^.ilosc_wypozyczonych_ksiazek);
+              while (not eof(puzytkownik)) do
+               begin
+                  glowa^.glowa_ksiazek:=nil;
+                  new(glowa^.glowa_ksiazek);
+                  readln(puzytkownik,glowa^.glowa_ksiazek^.autor);
+                  readln(puzytkownik,glowa^.glowa_ksiazek^.tytul);
+                  readln(puzytkownik,glowa^.glowa_ksiazek^.wydawnictwo);
+                  readln(puzytkownik,glowa^.glowa_ksiazek^.rok_wydania);
+                  readln(puzytkownik,glowa^.glowa_ksiazek^.dostepnosc);
+                  //if (glowa^.glowa_ksiazek^.previous<>nil) then glowa^.glowa_ksiazek^.previous^.next:=glowa^.glowa_ksiazek;
+                  glowa^.glowa_ksiazek:=glowa^.glowa_ksiazek^.next;
+               end;
+             glowa^.glowa_ksiazek:=nil;
+              close(puzytkownik);
+              chdir('..');
+              new(tmp);
+              tmp:=glowa;
+              glowa:=glowa^.next;
+              new(glowa);
+              glowa^.previous:=tmp;
+              glowa^.previous^.next:=glowa;
+            end;
+          glowa:=glowa^.previous;
+          glowa^.next:=nil;
+         while (glowa^.previous<> nil) do glowa:=glowa^.previous;
+          wczytaj_uzytkownikow:=glowa;
+        end;
+    end;
+
+    function wczytaj_ksiazki(var ksiazki :text): wsk_ksiazka;
+    var
+      glowa, tmp: wsk_ksiazka;
+      adres : string;
+      pksiazka : text;
+    begin
+      if (eof(ksiazki)) then wczytaj_ksiazki:=nil
+      else
+        begin
+          new(glowa);
+          glowa^.previous:=nil;
+          while (eof(ksiazki)<>true) do
+           begin
+            readln(ksiazki,glowa^.tytul);
+            chdir('ksiazki');
+            adres:=concat(glowa^.tytul,'.txt');
+            assign(pksiazka,adres);
+            reset(pksiazka);
+            readln(pksiazka,glowa^.tytul);
+            readln(pksiazka,glowa^.autor);
+            readln(pksiazka,glowa^.wydawnictwo);
+            readln(pksiazka,glowa^.rok_wydania);
+            readln(pksiazka,glowa^.dostepnosc);
+            close(pksiazka);
+            chdir('..');
+            new(tmp);
+            tmp:=glowa;
+            glowa:=glowa^.next;
+            new(glowa);
+            glowa^.previous:=tmp;
+            glowa^.previous^.next:=glowa;
+           end;
+
+          glowa:=glowa^.previous;
+          glowa^.next:=nil;
+          while (glowa^.previous<> nil) do glowa:=glowa^.previous;
+          wczytaj_ksiazki:=glowa;
+        end;
+    end;
+
+var
+  tmp: wsk_uzytkownik;
+  tmp1: wsk_ksiazka;
+begin
+  chdir('dane');
+  assign(uzytkownicy, 'lista_uzytkownicy.txt');
+  assign(ksiazki, 'lista_ksiazki.txt');
+  //tmp:=nil;
+  //tmp:=nil;
+  //new(tmp);
+  //new(tmp1);
+  if fileexists('lista_uzytkownicy.txt')=true then
+    begin
+      reset(uzytkownicy);
+      g_uzytkownicy:=wczytaj_uzytkownikow(uzytkownicy);
+      //if g_uzytkownicy<>nil then g_uzytkownicy^.previous:=nil;
+      close(uzytkownicy);
+    end;
+  if fileexists('lista_ksiazki.txt')=true then
+    begin
+      reset(ksiazki);
+      g_ksiazki:=wczytaj_ksiazki(ksiazki);
+      if g_ksiazki<>nil then g_ksiazki^.previous:=nil;
+      close(ksiazki);
+    end;
+  //dispose(tmp);
+end;
+
+end.
+
